@@ -25,3 +25,11 @@ console.log(divide(5,3)) //1.6666666666667
 
 let operated = operate(3,29.5,divide);
 console.log(operated);
+
+let buttons = document.querySelectorAll('button');
+
+buttons.forEach(button => {
+    button.addEventListener('click', e =>{
+        console.log(e.target.textContent);
+    })
+})
