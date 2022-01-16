@@ -1,35 +1,131 @@
-function add(a, b){
-    return (a + b);
+const currentOperand = document.querySelector('[data-current-operand]');
+const previousOperand = document.querySelector('[data-previous-operand]');
+const digitButtons = document.querySelectorAll('[data-digits]');
+const operatorButtons = document.querySelectorAll('[data-operator]');
+const clearButton = document.querySelector('[data-clear]');
+const deleteButton = document.querySelector('[data-delete]');
+const equalButton = document.querySelector('[data-equals]');
+
+let prev = '';
+let current = '';
+let operation = undefined;
+let computed = '';
+
+
+function clear(){
+    prev = '';
+    current = '';
+    operation = undefined;
+    computed = '';
 }
 
-function subtract(a, b){
-    return (a - b);
+function del(){
+    current = current.slice(0,-1);
 }
 
-function multiply(a, b){
-    return(a * b);
+function appendNumber(number){
+    if(number ==='.' && current.includes('.')) return;
+    // clear current as computed to allow user to choose new current value
+    if(current == computed || current == 'lol'){
+        current = '';
+    }
+    current += number;
 }
 
-function divide(a,b){
-    return (a/b);
+function getOperation(operator){
+    if(current =='lol'){
+        clear();
+    }
+
+    if(operation){
+        // do nothing if operation exist but current is 0
+        if(current ==='') return;
+        // if both current and prev contains a value, compute
+        if(current && prev){
+            compute();
+            prev = current; //set prev to current to display computation and set operator to new operator
+            operation = operator;
+            return;
+        }
+    } 
+    
+    //if current is not empty and is not '-', add operator
+    if(current){
+        operation = operator;
+        prev = current;
+        current = '';
+    } 
+    //if current is empty and user clicks '-', append '-' to make negative number
+    if(current ==='' && operator==='-'){
+        if(prev) return;
+        current += operator;
+    }
 }
 
-function operate(operand1, operand2, operator){
-    return operator(operand1, operand2);
+function compute(checkEqual = undefined){
+
+    switch (operation){
+        case '+':
+            computed = (parseFloat(prev) + parseFloat(current)).toString();
+            break;
+        case '-':
+            computed = (parseFloat(prev) - parseFloat(current)).toString();
+            break;
+        case '*':
+            computed = (parseFloat(prev) * parseFloat(current)).toString();
+            break;
+        case '/':
+            computed = (parseFloat(prev) / parseFloat(current)).toString();
+            break;
+        default:
+            return;
+    }
+    // set current to display computed value
+    if (computed == Infinity){
+        current = 'lol';
+        prev = ''
+        operation = '';
+        return;
+    }
+    current = computed;
+    operation = undefined; // clear operation
 }
 
-console.log(add(1,2)); //3
-console.log(subtract(3,5)); //-2
-console.log(multiply(2,4)); //8
-console.log(divide(5,3)) //1.6666666666667
+function update(){
+    if(operation != undefined){
+        previousOperand.innerText = prev + operation;
+    } else{
+        currentOperand.innerText = current;
+        previousOperand.innerText = prev;
+    }
+    currentOperand.innerText = current;
+}
 
-let operated = operate(3,29.5,divide);
-console.log(operated);
-
-let buttons = document.querySelectorAll('button');
-
-buttons.forEach(button => {
-    button.addEventListener('click', e =>{
-        console.log(e.target.textContent);
+digitButtons.forEach(button =>{
+    button.addEventListener('click', ()=>{
+       appendNumber(button.innerText);
+       update();
     })
+})
+
+operatorButtons.forEach(button =>{
+    button.addEventListener('click', ()=>{
+        getOperation(button.innerText);
+        update();
+    })
+})
+
+equalButton.addEventListener('click', ()=>{
+    compute();
+    update();
+})
+
+clearButton.addEventListener('click', ()=>{
+    clear();
+    update();
+})
+
+deleteButton.addEventListener('click', ()=>{
+    del();
+    update();
 })

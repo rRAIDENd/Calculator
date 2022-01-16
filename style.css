@@ -43,4 +43,13 @@ body{
     align-items: flex-end;
     justify-content: space-around;
     padding-right: 10px;
+    word-break: break-all;
+}
+
+.previousDisplay{
+    font-size: 1rem;
+}
+
+.currentDisplay{
+    font-size: 2rem;
 }
